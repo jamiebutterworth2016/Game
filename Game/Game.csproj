@@ -61,8 +61,12 @@
     <SignManifests>true</SignManifests>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="SimpleInjector, Version=4.3.0.0, Culture=neutral, PublicKeyToken=984cb50dea722e99, processorArchitecture=MSIL">
+      <HintPath>..\packages\SimpleInjector.4.3.0\lib\net45\SimpleInjector.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -74,12 +78,18 @@
     <Compile Include="Battle.cs" />
     <Compile Include="BattleExtensions.cs" />
     <Compile Include="BattleUnit.cs" />
+    <Compile Include="BattleUnitComparer.cs" />
     <Compile Include="DamageCalculator.cs" />
     <Compile Include="Dice.cs" />
+    <Compile Include="GameSaver.cs" />
     <Compile Include="Items\Sword.cs" />
     <Compile Include="Items\Weapon.cs" />
+    <Compile Include="KeyPresser.cs" />
     <Compile Include="Program.cs" />
+    <Compile Include="Program.LoadHero.cs" />
+    <Compile Include="Program.CreateHero.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SavedHero.cs" />
     <Compile Include="Unit.cs" />
     <Compile Include="UnitExtensions.cs" />
     <Compile Include="Team.cs" />
@@ -87,6 +97,7 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="Game_TemporaryKey.pfx" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.7.1">

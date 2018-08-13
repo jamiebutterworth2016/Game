@@ -6,7 +6,7 @@ namespace Game
 {
     public class Battle
     {
-        public IEnumerable<BattleUnit> Attackers { get; set; }
+        public IEnumerable<BattleUnit> Units { get; set; }
 
         public Battle(IEnumerable<Unit> units)
         {
@@ -29,80 +29,56 @@ namespace Game
 
             battleUnits.Sort(new BattleUnitComparer());
 
-            Attackers = battleUnits;
+            Units = battleUnits;
         }
 
-        public void RemoveAttacker(BattleUnit attacker)
+        public void RemoveUnit(BattleUnit unit)
         {
-            var attackers = Attackers.ToList();
+            var units = Units.ToList();
 
-            attackers.Remove(attacker);
+            units.Remove(unit);
 
-            Attackers = attackers;
+            Units = units;
         }
 
-        public void QueueAttacker(BattleUnit attacker)
+        public void QueueUnit(BattleUnit unit)
         {
-            var attackers = new Queue<BattleUnit>(Attackers);
+            var units = new Queue<BattleUnit>(Units);
 
-            attackers.Enqueue(attacker);
+            units.Enqueue(unit);
 
-            Attackers = attackers;
+            Units = units;
         }
 
-        public BattleUnit DequeueAttacker()
+        public BattleUnit DequeueUnit()
         {
-            var attackers = new Queue<BattleUnit>(Attackers);
+            var units = new Queue<BattleUnit>(Units);
 
-            var attacker = attackers.Dequeue();
+            var unit = units.Dequeue();
 
-            Attackers = attackers;
+            Units = units;
 
-            return attacker;
+            return unit;
         }
 
         public int GetNumberOfEnemies()
         {
-            return Attackers.Count(x => x.Unit.Team == Team.Enemy);
+            return Units.Count(x => x.Unit.Team == Team.Enemy);
         }
 
         public IEnumerable<BattleUnit> GetEnemies()
         {
-            return Attackers.Where(x => x.Unit.Team == Team.Enemy);
+            return Units.Where(x => x.Unit.Team == Team.Enemy);
         }
 
         public BattleUnit GetHero()
         {
-            return Attackers.SingleOrDefault(x => x.Unit.Team == Team.Hero);
+            return Units.SingleOrDefault(x => x.Unit.Team == Team.Hero);
         }
 
-        public BattleUnit GetAttackerById(int id)
+        public BattleUnit GeUnitById(int id)
         {
-            return Attackers.Single(x => x.Id == id);
-        }
-    }
-
-    public class BattleUnitComparer : IComparer<BattleUnit>
-    {
-        private readonly Die _die = new Die();
-
-        public int Compare(BattleUnit x, BattleUnit y)
-        {
-            var rollForX = _die.Roll();
-            var rollForY = _die.Roll();
-
-            if (rollForX > rollForY)
-            {
-                return -1;
-            }
-            else if (rollForX < rollForY)
-            {
-                return 1;
-            }
-            else
-            {
-                return Compare(x, y);
-            }
+            return Units.Single(x => x.Id == id);
         }
     }
 }
