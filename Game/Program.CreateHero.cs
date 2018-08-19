@@ -1,4 +1,6 @@
 ﻿using Game.Items;
+using Game.Items.Shields;
+using Game.Items.Weapons;
 using System;
 
 namespace Game
@@ -22,7 +24,7 @@ namespace Game
 
                 name = Console.ReadLine();
 
-                validName = !gameSaver.SaveExists(name);
+                validName = !gameSaver.SavedHeroExists(name);
 
                 if (!validName)
                 {
@@ -32,7 +34,7 @@ namespace Game
             }
             while (!validName);
 
-            var hero = new Unit(name, Team.Hero, new Sword()) { Health = 100 };
+            var hero = new Unit(name, Team.Hero, new Sword(), new Buckler()) { Health = 100 };
 
             const ConsoleKey SaveKey = ConsoleKey.S;
             const ConsoleKey DoNotSaveKey = ConsoleKey.N;

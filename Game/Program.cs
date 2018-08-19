@@ -1,4 +1,6 @@
 ﻿using Game.Items;
+using Game.Items.Shields;
+using Game.Items.Weapons;
 using SimpleInjector;
 using System;
 using System.Linq;
@@ -18,35 +20,38 @@ namespace Game
 
         public static void Main(string[] args)
         {
-            const ConsoleKey NewHeroKey = ConsoleKey.N;
-            const ConsoleKey LoadHeroKey = ConsoleKey.L;
+            const ConsoleKey CreateNewHero = ConsoleKey.C;
+            const ConsoleKey LoadSavedHeroKey = ConsoleKey.L;
 
             Console.Clear();
             Console.WriteLine("Menu");
             Console.WriteLine();
-            Console.WriteLine($"{NewHeroKey} - Create a new hero");
-            Console.WriteLine($"{LoadHeroKey} - Load a saved hero");
+            Console.WriteLine($"{CreateNewHero} - Create a new hero");
+            Console.WriteLine($"{LoadSavedHeroKey} - Load a saved hero");
 
-            var pressedKey = KeyPresser.WaitFor(new[] { NewHeroKey, LoadHeroKey });
+            var pressedKey = KeyPresser.WaitFor(new[] { CreateNewHero, LoadSavedHeroKey });
 
             Unit hero;
 
             switch (pressedKey)
             {
-                case NewHeroKey: hero = CreateNewHero();
+                case CreateNewHero: hero = Program.CreateNewHero();
                     break;
-                case LoadHeroKey: hero = LoadSavedHero();
+                case LoadSavedHeroKey: hero = LoadSavedHero();
                     break;
                 default:
                     throw new Exception();
             }
 
+            var boris = new Unit("Boris the Brutal", Team.Enemy, new Sword(), new Buckler()) { Health = 15 };
+            boris.AddPotion(new Potion());
+
             var units = new Unit[]
             {
                 hero,
                 new Unit("Steve the Shrew", Team.Enemy, new Sword()) { Health = 7 },
-                new Unit("Gary the Goblin", Team.Enemy, new Sword()) { Health = 15 },
-                new Unit("Boris the Brutal", Team.Enemy, new Sword()) { Health = 9 }
+                new Unit("Gary the Goblin", Team.Enemy, new Sword()) { Health = 9 },
+                boris
             };
 
             var battle = new Battle(units);
@@ -61,19 +66,61 @@ namespace Game
                 if (attacker.Unit.Team == Team.Hero)
                 {
                     Console.WriteLine();
+                    
+                    if (attacker.Unit.HasPotions())
+                    {
+                        const ConsoleKey DrinkPotionKey = ConsoleKey.D;
+                        const ConsoleKey AttackKey = ConsoleKey.A;
 
-                    var enemies = battle.GetEnemies();
+                        Console.WriteLine("Choose a turn");
+                        Console.WriteLine($"Hit {DrinkPotionKey} to drink a potion. {attacker.Unit.Name}'s health: {attacker.Unit.Health}.");
+                        Console.WriteLine($"Hit {AttackKey} to attack an enemy.");
 
-                    foreach (var enemy in enemies)
-                        Console.WriteLine($"Hit {enemy.Id} to attack {enemy.Unit.Name}.");
+                        var key = KeyPresser.WaitFor(new[] { DrinkPotionKey, AttackKey });
+                        Console.WriteLine();
 
-                    var targetIds = enemies.Select(x => Convert.ToChar(Convert.ToString(x.Id)));
+                        switch (key)
+                        {
+                            case DrinkPotionKey:
+                                AttackerDrinksPotion(attacker.Unit);
+                                break;
+                            case AttackKey:
+                                var enemies = battle.GetEnemies();
 
-                    var targetId = Convert.ToInt32(Convert.ToString(KeyPresser.WaitFor(targetIds)));
+                                foreach (var enemy in enemies)
+                                    Console.WriteLine($"Hit {enemy.Id} to attack {enemy.Unit.Name}. Health: {enemy.Unit.Health}.");
 
-                    var defender = battle.GeUnitById(targetId);
+                                var targetIds = enemies.Select(x => Convert.ToChar(Convert.ToString(x.Id)));
 
-                    AttackerAttacksDefender(attacker, defender, battle);
+                                var targetId = Convert.ToInt32(Convert.ToString(KeyPresser.WaitFor(targetIds)));
+
+                                Console.WriteLine();
+
+                                var defender = battle.GeUnitById(targetId);
+
+                                AttackerAttacksDefender(attacker, defender, battle);
+                                break;
+                            default:
+                                throw new Exception();
+                        }
+                    }
+                    else
+                    {
+                        var enemies = battle.GetEnemies();
+
+                        foreach (var enemy in enemies)
+                            Console.WriteLine($"Hit {enemy.Id} to attack {enemy.Unit.Name}. Health: {enemy.Unit.Health}.");
+
+                        var targetIds = enemies.Select(x => Convert.ToChar(Convert.ToString(x.Id)));
+
+                        var targetId = Convert.ToInt32(Convert.ToString(KeyPresser.WaitFor(targetIds)));
+
+                        Console.WriteLine();
+
+                        var defender = battle.GeUnitById(targetId);
+
+                        AttackerAttacksDefender(attacker, defender, battle);
+                    }
                 }
                 else if (attacker.Unit.Team == Team.Enemy)
                 {
@@ -95,9 +142,9 @@ namespace Game
                 KeyPresser.WaitFor(ConsoleKey.S);
 
                 var gameSaver = _container.GetInstance<GameSaver>();
-
                 gameSaver.OverwriteSave(hero);
 
+                Console.WriteLine();
                 Console.WriteLine();
                 Console.WriteLine("Game Saved.");
             }
@@ -110,17 +157,68 @@ namespace Game
             var defenderHealthBeforeAttack = defender.Unit.Health;
 
             Console.WriteLine();
-            Console.WriteLine($"{attacker.Unit.Name} attacks {defender.Unit.Name}.");
 
-            attacker.Unit.Attack(defender.Unit);
+            var attack = attacker.Unit.Attack(defender.Unit);
 
-            Console.WriteLine($"{defender.Unit.Name}'s health is reduced from {defenderHealthBeforeAttack} to {defender.Unit.Health}.");
-
-            if (defender.Unit.IsDead())
+            if (!attack.IsBlocked)
             {
-                battle.RemoveUnit(defender);
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"{attacker.Unit.Name} attacks {defender.Unit.Name} for {attack.Damage} damage.");
+                Console.ResetColor();
 
-                Console.WriteLine($"{defender.Unit.Name} has died.");
+                Console.WriteLine($"{defender.Unit.Name}'s health is reduced from {defenderHealthBeforeAttack} to {defender.Unit.Health}.");
+
+                if (defender.Unit.IsDead())
+                {
+                    battle.RemoveUnit(defender);
+
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine($"{defender.Unit.Name} has died.");
+                    Console.ResetColor();
+
+                    if (defender.Unit.Team == Team.Enemy)
+                    {
+                        if (defender.Unit.HasPotions())
+                        {
+                            const ConsoleKey PickUpPotionKey = ConsoleKey.P;
+
+                            var numberOfPotions = defender.Unit.Potions.Count();
+
+                            Console.ForegroundColor = ConsoleColor.Yellow;
+                            Console.WriteLine($"{defender.Unit.Name} has dropped {numberOfPotions} potion(s).");
+                            Console.ResetColor();
+                            Console.WriteLine($"Hit {PickUpPotionKey} to pick up.");
+                            KeyPresser.WaitFor(PickUpPotionKey);
+                            Console.WriteLine();
+
+                            attacker.Unit.TakePotions(defender.Unit);
+
+                            Console.WriteLine($"{attacker.Unit.Name} has picked up {numberOfPotions} potion(s).");
+                            Console.WriteLine($"{attacker.Unit.Name} now has {numberOfPotions} potion(s).");
+                        }
+                    }
+                }
+            }
+            else
+            {
+                Console.WriteLine($"{attacker.Unit.Name} attacks {defender.Unit.Name} for {attack.Damage} damage.");
+
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.WriteLine($"{defender.Unit.Name} BLOCKS {attacker.Unit.Name}'s attack.");
+                Console.ResetColor();
+            }
+        }
+
+        private static void AttackerDrinksPotion(Unit attacker)
+        {
+            var result = attacker.DrinkPotion();
+
+            if (result.DrankPotion)
+            {
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine($"{attacker.Name} drinks potion. Health increases by {result.HealAmount} from {result.HealthBeforeDrinkingPotion} to {result.HealthAfterDrinkingPotion}.");
+                Console.ResetColor();
+                Console.WriteLine($"{attacker.Name} has {attacker.Potions.Count()} potions left.");
             }
         }
     }

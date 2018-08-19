@@ -23,9 +23,7 @@ namespace Game
 
             var id = KeyPresser.WaitFor(ids);
 
-            var heroName = savedHeroes.Single(x => x.Id == id).Hero.Name;
-
-            var hero = gameSaver.GetSavedHero(heroName);
+            var hero = savedHeroes.Single(x => x.Id == id).Hero;
 
             return hero;
         }

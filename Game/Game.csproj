@@ -65,6 +65,7 @@
       <HintPath>..\packages\SimpleInjector.4.3.0\lib\net45\SimpleInjector.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
@@ -75,20 +76,25 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Results\AttackResult.cs" />
     <Compile Include="Battle.cs" />
     <Compile Include="BattleExtensions.cs" />
     <Compile Include="BattleUnit.cs" />
     <Compile Include="BattleUnitComparer.cs" />
-    <Compile Include="DamageCalculator.cs" />
     <Compile Include="Dice.cs" />
     <Compile Include="GameSaver.cs" />
-    <Compile Include="Items\Sword.cs" />
-    <Compile Include="Items\Weapon.cs" />
+    <Compile Include="Items\Potion.cs" />
+    <Compile Include="Items\Shields\Buckler.cs" />
+    <Compile Include="Items\Shields\Shield.cs" />
+    <Compile Include="Items\Weapons\Sword.cs" />
+    <Compile Include="Items\Weapons\Weapon.cs" />
     <Compile Include="KeyPresser.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Program.LoadHero.cs" />
     <Compile Include="Program.CreateHero.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RandomNumberGenerator.cs" />
+    <Compile Include="Results\DrinkPotionResult.cs" />
     <Compile Include="SavedHero.cs" />
     <Compile Include="Unit.cs" />
     <Compile Include="UnitExtensions.cs" />
