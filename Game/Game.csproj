@@ -76,6 +76,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Items\Shields\KiteShield.cs" />
+    <Compile Include="Items\Weapons\Axe.cs" />
     <Compile Include="Results\AttackResult.cs" />
     <Compile Include="Battle.cs" />
     <Compile Include="BattleExtensions.cs" />
@@ -93,12 +95,14 @@
     <Compile Include="Program.LoadHero.cs" />
     <Compile Include="Program.CreateHero.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RandomNumberGenerator.cs" />
+    <Compile Include="RandomGenerator.cs" />
     <Compile Include="Results\DrinkPotionResult.cs" />
     <Compile Include="SavedHero.cs" />
     <Compile Include="Unit.cs" />
     <Compile Include="UnitExtensions.cs" />
     <Compile Include="Team.cs" />
+    <Compile Include="UnitFactory.cs" />
+    <Compile Include="RandomFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

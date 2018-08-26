@@ -11,12 +11,16 @@ namespace Game
     [DataContract]
     public class Unit
     {
-        public Unit(string name, Team team, Weapon weapon, Shield shield = null)
+        public Unit(string name, Team team, decimal health, Weapon weapon, decimal gold = 0, Shield shield = null)
         {
             Name = name;
             Team = team;
+            Health = health;
             Weapon = weapon;
+
+            Gold = gold;
             Shield = shield;
+
             Potions = new List<Potion>();
         }
 
@@ -38,6 +42,14 @@ namespace Game
         [DataMember]
         public IEnumerable<Potion> Potions { get; set; }
 
+        [DataMember]
+        public decimal Gold { get; set; }
+
+        public bool HasGold()
+        {
+            return Gold > 0;
+        }
+
         public bool HasPotions()
         {
             return Potions.Any();
@@ -56,6 +68,12 @@ namespace Game
             var potion = potions.Dequeue();
             Potions = potions;
             return potion;
+        }
+
+        public void TakeGold(Unit defender)
+        {
+            Gold += defender.Gold;
+            defender.Gold = 0m;
         }
 
         public void TakePotions(Unit defender)

@@ -1,5 +1,4 @@
-﻿using Game.Items;
-using Game.Items.Shields;
+﻿using Game.Items.Shields;
 using Game.Items.Weapons;
 using System;
 
@@ -34,7 +33,7 @@ namespace Game
             }
             while (!validName);
 
-            var hero = new Unit(name, Team.Hero, new Sword(), new Buckler()) { Health = 100 };
+            var hero = new Unit(name, Team.Hero, 200m, new Sword(), shield: new KiteShield());
 
             const ConsoleKey SaveKey = ConsoleKey.S;
             const ConsoleKey DoNotSaveKey = ConsoleKey.N;

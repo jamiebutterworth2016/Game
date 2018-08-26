@@ -76,7 +76,7 @@ namespace Game
             return Units.SingleOrDefault(x => x.Unit.Team == Team.Hero);
         }
 
-        public BattleUnit GeUnitById(int id)
+        public BattleUnit GetUnitById(int id)
         {
             return Units.Single(x => x.Id == id);
         }

@@ -2,6 +2,6 @@
 {
     public class Buckler : Shield
     {
-        public override decimal ChanceToBlock { get => 50; }
+        public override decimal ChanceToBlock { get => 20; }
     }
 }

@@ -4,6 +4,7 @@ namespace Game.Items.Weapons
 {
     [DataContract]
     [KnownType(typeof(Sword))]
+    [KnownType(typeof(Axe))]
     public abstract class Weapon
     {
         public abstract decimal MinDamage { get; }
@@ -11,7 +12,7 @@ namespace Game.Items.Weapons
 
         public decimal GetRandomDamage()
         {
-            var randomDamage = RandomNumberGenerator.GetRandomDecimal(MinDamage, MaxDamage);
+            var randomDamage = RandomGenerator.GetRandomDecimal(MinDamage, MaxDamage);
 
             return randomDamage;
         }
